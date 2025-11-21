@@ -75,7 +75,7 @@ async function generateLeavePDF(leaveData) {
             // Student Details
             drawText(leaveData.idno || 'N/A', 710);  // ID
             drawText(leaveData.name || 'N/A', 688);   // Name
-            drawText(leaveData.contact || '6306808649', 667); // Contact (not in current form)
+            drawText(leaveData.contact || '8181987654', 667); // Contact (not in current form)
             drawText(leaveData.hostel || 'N/A', 647); // Hostel
             drawText(leaveData.room || 'N/A', 627);   // Room
             drawText(warden, 607);                    // Warden
