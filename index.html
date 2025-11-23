@@ -162,7 +162,7 @@
 
                                                         <td>
                                                             <div id="div_logout" align="right" style="margin-right:20px">
-                                                                <span id="ctl00_lbl_current_date" style="color:#211D70;font-weight:bold;">Thursday, November 20, 2025</span>&nbsp;
+                                                                <span id="ctl00_lbl_current_date" style="color:#211D70;font-weight:bold;"></span>&nbsp;
                                                                 <span id="ctl00_lbl_spacer" style="color:#211D70;font-weight:bold;">|</span>&nbsp;
 
                                                                 <a class="footer" href="https://academic.bits-pilani.ac.in/SWD/Student/Logout.aspx"><strong><span style="font-size: 8pt">[Logout]</span></strong></a>
@@ -461,6 +461,23 @@
             });
         </script>
 
-
+        <script>
+        // Dynamically populate the header date (e.g., "Thursday, November 20, 2025")
+        (function(){
+            var el = document.getElementById('ctl00_lbl_current_date');
+            function updateDate(){
+                if(!el) return;
+                var date = new Date();
+                var options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' };
+                el.textContent = date.toLocaleDateString('en-US', options);
+            }
+            updateDate();
+            // Schedule an update at next midnight to keep day/date accurate across days
+            var now = new Date();
+            var nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+            var msToMidnight = nextMidnight - now;
+            setTimeout(function(){ updateDate(); setInterval(updateDate, 24*60*60*1000); }, msToMidnight + 1000);
+        })();
+        </script>
 
 </body></html>
