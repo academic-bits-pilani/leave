@@ -22,16 +22,66 @@ async function generateLeavePDF(leaveData) {
             }, 5000);
         }
 
-        // Fetch the PDF template
-        const url = 'download_approval/leave.pdf';
-        console.log('Fetching PDF template from:', url);
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch PDF template: ${response.status} ${response.statusText}`);
+        let existingPdfBytes;
+        
+        try {
+            // First try: Direct path
+            const url = 'download_approval/leave.pdf';
+            console.log('Attempt #1: Fetching PDF from:', url);
+            
+            const response = await fetch(url, {
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'application/pdf'
+                }
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            existingPdfBytes = await response.arrayBuffer();
+            if (!existingPdfBytes || existingPdfBytes.byteLength === 0) {
+                throw new Error('Empty PDF data received');
+            }
+            console.log('Successfully loaded PDF, size:', existingPdfBytes.byteLength, 'bytes');
+            
+        } catch (firstError) {
+            console.warn('First attempt failed, trying fallback URL...', firstError);
+            
+            try {
+                // Second try: GitHub Pages URL
+                const basePath = window.location.pathname.split('/').slice(0, -1).join('/');
+                const fallbackUrl = `${basePath}/download_approval/leave.pdf`;
+                console.log('Attempt #2: Fetching PDF from:', fallbackUrl);
+                
+                const fallbackResponse = await fetch(fallbackUrl, {
+                    cache: 'no-cache',
+                    headers: {
+                        'Accept': 'application/pdf'
+                    }
+                });
+                
+                if (!fallbackResponse.ok) throw new Error(`HTTP ${fallbackResponse.status}`);
+                
+                existingPdfBytes = await fallbackResponse.arrayBuffer();
+                if (!existingPdfBytes || existingPdfBytes.byteLength === 0) {
+                    throw new Error('Empty PDF data received from fallback');
+                }
+                console.log('Successfully loaded PDF from fallback, size:', existingPdfBytes.byteLength, 'bytes');
+                
+            } catch (secondError) {
+                console.error('All attempts to load PDF failed:', secondError);
+                if (downloadBtn) {
+                    downloadBtn.innerHTML = 'Download Failed';
+                    downloadBtn.style.pointerEvents = '';
+                    setTimeout(() => {
+                        downloadBtn.innerHTML = 'Download Leave Approval';
+                    }, 2000);
+                }
+                throw new Error('Failed to load PDF template. Please try again later.');
+            }
         }
-        const existingPdfBytes = await response.arrayBuffer();
 
-        // Load the PDF document
+        // Load the PDF document with the obtained bytes
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const pages = pdfDoc.getPages();
@@ -47,7 +97,7 @@ async function generateLeavePDF(leaveData) {
 
         // Wardens and Hostels mapping
         const wardens = ['Rajesh Kumar', 'Srinivas Appari', 'Nitin Chaturvedi', 'Krishnendra Shekhawat', 
-                        'Prof. Rakhee and Meghana Tare', 'Kumar Sankar Bhattacharya', 'Praveen Kumar A.V.', 
+                        'Prof. Rakhee and Prof. Meghana Tare', 'Kumar Sankar Bhattacharya', 'Praveen Kumar A.V.', 
                         'MM Pandey', 'Prof. Trilok Mathur'];
         const hostels = ['Srinivasa Ramanujan Bhawan', 'Krishna Bhawan', 'Gandhi Bhawan', 'Vishwakarma Bhawan', 
                         'Meera Bhawan', 'Shankar Bhawan', 'Vyas Bhawan', 'Ram Bhawan', 'Budh Bhawan'];
@@ -75,7 +125,34 @@ async function generateLeavePDF(leaveData) {
             // Student Details
             drawText(leaveData.idno || 'N/A', 710);  // ID
             drawText(leaveData.name || 'N/A', 688);   // Name
-            drawText(leaveData.contact || '8181987654', 667); // Contact (not in current form)
+            // Resolve contact number: prefer leaveData.contact, then try persisted leaves or stored user contact, else fallback
+            let contactToUse = '';
+            try {
+                if (leaveData.contact && String(leaveData.contact).trim()) {
+                    contactToUse = String(leaveData.contact).trim();
+                } else {
+                    // Try to find matching saved leave in localStorage
+                    const stored = localStorage.getItem('swd_leaves');
+                    if (stored) {
+                        try {
+                            const arr = JSON.parse(stored);
+                            if (Array.isArray(arr)) {
+                                const match = arr.find(l => l && l.idno && leaveData.idno && String(l.idno) === String(leaveData.idno));
+                                if (match && match.contact) contactToUse = String(match.contact).trim();
+                            }
+                        } catch (e) { /* ignore parse errors */ }
+                    }
+                    // If still empty, try a stored user contact
+                    if (!contactToUse) {
+                        const storedContact = localStorage.getItem('swd_user_contact');
+                        if (storedContact) contactToUse = storedContact;
+                    }
+                }
+            } catch (e) {
+                console.warn('Error resolving contact for PDF:', e);
+            }
+            if (!contactToUse) contactToUse = '8181232412';
+            drawText(contactToUse, 667); // Contact
             drawText(leaveData.hostel || 'N/A', 647); // Hostel
             drawText(leaveData.room || 'N/A', 627);   // Room
             drawText(warden, 607);                    // Warden
