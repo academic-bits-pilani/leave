@@ -341,7 +341,21 @@
                 <form id="leaveForm">
                     <div class="row"><label for="idno">IDNO</label><input id="idno" name="idno" type="text" required></div>
                     <div class="row"><label for="name">Name</label><input id="name" name="name" type="text" required></div>
-                    <div class="row"><label for="hostel">Hostel</label><input id="hostel" name="hostel" type="text"></div>
+                    <div class="row">
+                        <label for="hostel">Hostel</label>
+                        <select id="hostel" name="hostel" required>
+                            <option value="">Select Hostel</option>
+                            <option value="Rana Pratap Bhawan">Rana Pratap Bhawan</option>
+                            <option value="Krishna Bhawan">Krishna Bhawan</option>
+                            <option value="Gandhi Bhawan">Gandhi Bhawan</option>
+                            <option value="Vishwakarma Bhawan">Vishwakarma Bhawan</option>
+                            <option value="Meera Bhawan">Meera Bhawan</option>
+                            <option value="Shankar Bhawan">Shankar Bhawan</option>
+                            <option value="Vyas Bhawan">Vyas Bhawan</option>
+                            <option value="Ram Bhawan">Ram Bhawan</option>
+                            <option value="Budh Bhawan">Budh Bhawan</option>
+                        </select>
+                    </div>
                     <div class="row"><label for="room">Room No.</label><input id="room" name="room" type="text"></div>
                     <div class="row"><label for="contact">Contact No.</label><input id="contact" name="contact" type="text" placeholder="xxxxxxxxxx"></div>
                     <div class="row"><label for="dept">Departure</label><input id="dept" name="dept" type="date" required></div>
