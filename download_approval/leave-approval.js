@@ -96,10 +96,10 @@ async function generateLeavePDF(leaveData) {
         };
 
         // Wardens and Hostels mapping
-        const wardens = ['Rajesh Kumar', 'Srinivas Appari', 'Nitin Chaturvedi', 'Krishnendra Shekhawat', 
+        const wardens = ['Prof. Prateek', 'Srinivas Appari', 'Nitin Chaturvedi', 'Krishnendra Shekhawat', 
                         'Prof. Rakhee and Prof. Meghana Tare', 'Kumar Sankar Bhattacharya', 'Praveen Kumar A.V.', 
                         'MM Pandey', 'Prof. Trilok Mathur'];
-        const hostels = ['Srinivasa Ramanujan Bhawan', 'Krishna Bhawan', 'Gandhi Bhawan', 'Vishwakarma Bhawan', 
+        const hostels = ['Rana Pratap Bhawan', 'Krishna Bhawan', 'Gandhi Bhawan', 'Vishwakarma Bhawan', 
                         'Meera Bhawan', 'Shankar Bhawan', 'Vyas Bhawan', 'Ram Bhawan', 'Budh Bhawan'];
 
         const wardenIndex = hostels.indexOf(leaveData.hostel);
