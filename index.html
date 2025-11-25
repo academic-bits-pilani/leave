@@ -343,6 +343,7 @@
                     <div class="row"><label for="name">Name</label><input id="name" name="name" type="text" required></div>
                     <div class="row"><label for="hostel">Hostel</label><input id="hostel" name="hostel" type="text"></div>
                     <div class="row"><label for="room">Room No.</label><input id="room" name="room" type="text"></div>
+                    <div class="row"><label for="contact">Contact No.</label><input id="contact" name="contact" type="text" placeholder="xxxxxxxxxx"></div>
                     <div class="row"><label for="dept">Departure</label><input id="dept" name="dept" type="date" required></div>
                     <div class="row"><label for="ret">Return</label><input id="ret" name="ret" type="date" required></div>
                     <div class="row"><label for="reason">Reason</label><textarea id="reason" name="reason" rows="2"></textarea></div>
@@ -388,7 +389,7 @@
                     var tr = document.createElement('tr'); tr.setAttribute('align','left'); tr.setAttribute('valign','middle'); tr.style.backgroundColor='White';
                     var cells = [sr, obj.idno||'', obj.name||'', obj.hostel||'', obj.room||'', formatDateInput(obj.dept), formatDateInput(obj.ret), obj.reason||'', obj.status||'Approved', formatDateInput(obj.applied) || (new Date()).toLocaleDateString('en-GB').replace(/\//g,'-')];
                     cells.forEach(function(c, idx){ var td = document.createElement('td'); td.style.borderColor='Black'; if(idx===0){ td.setAttribute('align','left'); td.setAttribute('valign','top'); } if(idx===8){ td.style.color='DarkGreen'; td.style.fontWeight='bold'; } td.textContent = c; tr.appendChild(td); });
-                    var params = 'idno=' + encodeURIComponent(obj.idno||'') + '&name=' + encodeURIComponent(obj.name||'') + '&hostel=' + encodeURIComponent(obj.hostel||'') + '&room=' + encodeURIComponent(obj.room||'') + '&dept=' + encodeURIComponent(obj.dept||'') + '&ret=' + encodeURIComponent(obj.ret||'') + '&reason=' + encodeURIComponent(obj.reason||'') + '&applied=' + encodeURIComponent(obj.applied||'') + '&status=' + encodeURIComponent(obj.status||'Approved');
+                    var params = 'idno=' + encodeURIComponent(obj.idno||'') + '&name=' + encodeURIComponent(obj.name||'') + '&contact=' + encodeURIComponent(obj.contact||'') + '&hostel=' + encodeURIComponent(obj.hostel||'') + '&room=' + encodeURIComponent(obj.room||'') + '&dept=' + encodeURIComponent(obj.dept||'') + '&ret=' + encodeURIComponent(obj.ret||'') + '&reason=' + encodeURIComponent(obj.reason||'') + '&applied=' + encodeURIComponent(obj.applied||'') + '&status=' + encodeURIComponent(obj.status||'Approved');
                     var actionTd = document.createElement('td'); actionTd.style.borderColor='Black'; actionTd.innerHTML = '<a href="./leave_details.html?' + params + '" target="_blank"><b>View Details</b></a>'; tr.appendChild(actionTd);
                     var downloadTd = document.createElement('td'); downloadTd.style.borderColor='Black'; 
                     var downloadLink = document.createElement('a'); 
@@ -435,6 +436,7 @@
                     e.preventDefault();
                     var idno = document.getElementById('idno').value || '';
                     var name = document.getElementById('name').value || '';
+                    var contact = document.getElementById('contact').value || '';
                     var hostel = document.getElementById('hostel').value || '';
                     var room = document.getElementById('room').value || '';
                     var dept = document.getElementById('dept').value || '';
@@ -446,7 +448,7 @@
                     var stored = localStorage.getItem('swd_leaves');
                     if(stored){ try{ leaves = JSON.parse(stored) || []; }catch(err){ leaves = []; } }
 
-                    var newLeave = { idno: idno, name: name, hostel: hostel, room: room, dept: dept, ret: ret, reason: reason, applied: applied, status: 'Approved' };
+                    var newLeave = { idno: idno, name: name, contact: contact, hostel: hostel, room: room, dept: dept, ret: ret, reason: reason, applied: applied, status: 'Approved' };
                     leaves.push(newLeave);
                     localStorage.setItem('swd_leaves', JSON.stringify(leaves));
 
