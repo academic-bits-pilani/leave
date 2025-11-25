@@ -410,13 +410,22 @@
                     attachLinkBlockHandlers(tr);
                 }
 
-                // Load persisted leaves and render
+                // Load and sort persisted leaves by applied date (newest first)
                 var storedLeaves = localStorage.getItem('swd_leaves');
                 if(storedLeaves){
                     try{
                         var leaves = JSON.parse(storedLeaves) || [];
+                        // Sort leaves by applied date in descending order
+                        leaves.sort((a, b) => {
+                            const dateA = new Date(a.applied || 0);
+                            const dateB = new Date(b.applied || 0);
+                            return dateB - dateA; // Sort in descending order (newest first)
+                        });
+                        // Render sorted leaves
                         leaves.forEach(function(l, i){ renderRow(l, i+1); });
-                    }catch(e){ console.error('Invalid leaves in storage', e); }
+                    }catch(e){ 
+                        console.error('Invalid leaves in storage', e); 
+                    }
                 }
 
                 // Open modal and default applied date to today
@@ -448,11 +457,33 @@
                     var stored = localStorage.getItem('swd_leaves');
                     if(stored){ try{ leaves = JSON.parse(stored) || []; }catch(err){ leaves = []; } }
 
-                    var newLeave = { idno: idno, name: name, contact: contact, hostel: hostel, room: room, dept: dept, ret: ret, reason: reason, applied: applied, status: 'Approved' };
+                    var newLeave = { 
+                        idno: idno, 
+                        name: name, 
+                        hostel: hostel, 
+                        room: room, 
+                        dept: dept, 
+                        ret: ret, 
+                        reason: reason, 
+                        applied: applied, 
+                        status: 'Approved' 
+                    };
+                    
+                    // Add new leave and sort all leaves
                     leaves.push(newLeave);
+                    leaves.sort((a, b) => {
+                        const dateA = new Date(a.applied || 0);
+                        const dateB = new Date(b.applied || 0);
+                        return dateB - dateA; // Sort in descending order (newest first)
+                    });
+                    
+                    // Save sorted leaves
                     localStorage.setItem('swd_leaves', JSON.stringify(leaves));
-
-                    renderRow(newLeave, leaves.length);
+                    
+                    // Clear and re-render all leaves to maintain consistent order
+                    const tbody = table.querySelector('tbody');
+                    tbody.innerHTML = ''; // Clear existing rows
+                    leaves.forEach((l, i) => renderRow(l, i + 1));
 
                     // Sync header welcome name with submitted name and persist
                     try{ var headerName = document.getElementById('ctl00_Name'); if(headerName && name){ headerName.textContent = name; localStorage.setItem('swd_user_name', name); } }catch(ex){}
