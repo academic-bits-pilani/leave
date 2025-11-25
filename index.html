@@ -494,9 +494,13 @@
                     // Save sorted leaves
                     localStorage.setItem('swd_leaves', JSON.stringify(leaves));
                     
-                    // Clear and re-render all leaves to maintain consistent order
+                    // Clear only the data rows (skip the header row)
                     const tbody = table.querySelector('tbody');
-                    tbody.innerHTML = ''; // Clear existing rows
+                    // Remove all rows except the first one (header)
+                    while (tbody.rows.length > 1) {
+                        tbody.deleteRow(1);
+                    }
+                    // Re-render all leaves
                     leaves.forEach((l, i) => renderRow(l, i + 1));
 
                     // Sync header welcome name with submitted name and persist
